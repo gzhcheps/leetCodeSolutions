@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -43,6 +44,143 @@ public class Solutions {
 			costInt[i] = Integer.parseInt(cost[i]); 
 		}
 		int result = canCompleteCircuit(gasInt,costInt);
+	}
+	/**Given an array S of n integers, are there elements a, b, c in S such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
+	* Note:
+	* Elements in a triplet (a,b,c) must be in non-descending order. (ie, a ≤ b ≤ c)
+	* The solution set must not contain duplicate triplets.
+	* For example, given array S = {-1 0 1 2 -1 -4},
+	* A solution set is:
+	* (-1, 0, 1)
+	* (-1, -1, 2)*/
+	public List<List<Integer>> threeSum(int[] input) {
+		List<List<Integer>> resultList = new ArrayList<>();
+
+		int a = 0;
+		int b = 0;
+		int c = 0;
+		//少于三个时直接返回空结果
+		if (input.length < 3) {
+			return resultList;
+		}
+		//对输入的int集合进行排查，筛选出的唯一集合
+		Map<Integer, Integer> mapUnique = new HashMap<>();
+		//重复集合
+		Map<Integer, Integer> mapRep = new HashMap<>();
+		int zeroNum = 0;
+		for (int i = 0; i < input.length; i++) {
+			//若非0且首次出现则记录
+			if (input[i] != 0 && mapUnique.get(input[i]) == null) {
+				mapUnique.put(input[i], 1);
+
+			} else if (input[i] == 0 && zeroNum < 3) {
+				//记录0与0出现的次数
+				if (zeroNum == 0) {
+					mapUnique.put(input[i], zeroNum+1);
+				}
+				zeroNum++;
+
+			} else if (input[i] != 0 && mapUnique.get(input[i]) < 2) {
+				//非0数字若出现重复则放入重复集合
+				mapRep.put(input[i], 2);
+			}
+		}
+		//将唯一集合转换为int数组
+		int[] num = new int[mapUnique.size()];
+		int index = 0;
+		for (int each : mapUnique.keySet()) {
+			num[index] = each;
+			index++;
+		}
+		/**
+		 * 对重复集合记录的数字进行特殊处理
+		 * 数字重复2次以上就没有意义，唯一需要考虑的是重复两次的时候存在一个数字正好与其相加为0
+		 */
+		for (int each : mapRep.keySet()) {
+			for (int i = 0; i < num.length; i++) {	
+				if (each*2 + num[i] ==0) {				
+					List<Integer> singleResultIntegers = new ArrayList<>();
+					if (each<num[i]) {
+						singleResultIntegers.add(each);
+						singleResultIntegers.add(each);
+						singleResultIntegers.add(num[i]);
+						resultList.add(singleResultIntegers);
+					}else {
+						singleResultIntegers.add(num[i]);
+						singleResultIntegers.add(each);
+						singleResultIntegers.add(each);
+						resultList.add(singleResultIntegers);
+					}
+				}
+			}
+		}
+		//对唯一集合快排
+		quickSort(num, 0, num.length - 1);
+		//循环唯一集合，找到可能的解
+		for (int i = 0; i < num.length; i++) {
+			for (int j = i + 1; j < num.length; j++) {
+				for (int j2 = j + 1; j2 < num.length; j2++) {
+					a = num[i];
+					b = num[j];
+					c = num[j2];
+					if (a + b + c == 0) {
+							List<Integer> singleResultIntegers = new ArrayList<>();
+							singleResultIntegers.add(a);
+							singleResultIntegers.add(b);
+							singleResultIntegers.add(c);
+							resultList.add(singleResultIntegers);						}
+					}
+			}
+		}
+		//若0出现3次以上，则存在特殊解0,0,0
+		if (zeroNum == 3) {
+			List<Integer> singleResultIntegers = new ArrayList<>();
+			singleResultIntegers.add(0);
+			singleResultIntegers.add(0);
+			singleResultIntegers.add(0);
+			resultList.add(singleResultIntegers);
+		}
+		return resultList;
+	}
+	private void quickSort(int a[],int start,int end)
+	{
+		int i,j;
+		i=start;
+		j=end;
+		if((a==null)||(a.length==0))
+		return;
+		while(i<j)
+		{
+		while(i<j&&a[i]<=a[j])/*以数组start下标的数据为key，右侧扫描*/
+		{
+		j--;
+		}
+		if(i<j)/*右侧扫描，找出第一个比key小的，交换位置*/
+		{
+		int temp=a[i];
+		a[i]=a[j];
+		a[j]=temp;
+		}
+		while(i<j&&a[i]<a[j])/*左侧扫描（此时a[j]中存储着key值）*/
+		{
+		i++;
+		}
+		if(i<j)/*找出第一个比key大的，交换位置*/
+		{
+		int temp=a[i];
+		a[i]=a[j];
+		a[j]=temp;
+		}
+		}
+		if(i-start>1)
+		{
+		/*递归调用，把key前面的完成排序*/
+		quickSort(a,start,i-1);
+		}
+		if(end-i>1)
+		{
+		quickSort(a,i+1,end);/*递归调用，把key后面的完成排序*/
+		}
 	}
 	/**There are N gas stations along a circular route, where the amount of gas at station i is gas[i].
 	 * You have a car with an unlimited gas tank and it costs cost[i] of gas to travel from station i to its next station (i+1). You begin the journey with an empty tank at one of the gas stations.
