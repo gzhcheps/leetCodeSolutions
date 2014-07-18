@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import javax.swing.text.AbstractDocument.BranchElement;
+
 import org.junit.Test;
 
 public class Solutions {
@@ -45,6 +47,81 @@ public class Solutions {
 		}
 		int result = canCompleteCircuit(gasInt,costInt);
 	}
+	
+	/**Given a 2D board and a word, find if the word exists in the grid.
+	 * The word can be constructed from letters of sequentially adjacent cell, where "adjacent" cells are those horizontally or vertically neighboring. The same letter cell may not be used more than once.
+	 * For example,
+	 * Given board =
+	 * [
+	 *   ["ABCE"],
+	 *   ["SFCS"],
+	 *   ["ADEE"]
+	 * ]
+	 * word = "ABCCED", -> returns true,
+	 * word = "SEE", -> returns true,
+	 * word = "ABCB", -> returns false.*/
+	public boolean exist(char[][] board, String word) {
+		boolean result = false;
+		if (word.length()==0) {
+			return result;
+		}
+	    for (int i = 0; i < board.length; i++) {
+	    	char[] eachLine = board[i];
+			for (int j = 0; j < eachLine.length; j++) {
+				if (word.charAt(0) == eachLine[j]) {
+					result = searchBoard(board,word,0,j,i,board.length-1,eachLine.length-1);
+				}
+			}
+		}
+	    return result;
+	}
+	private boolean searchBoard(char[][] board,String word,int index,int row,int line,int rowMax,int lineMax) {
+		boolean result = false;
+		if (index == word.length() -1) {
+			result = true;
+			return result;
+		}else {
+			char now = word.charAt(index);
+			if (row -1 >=0
+				&& line - 1>=0
+				&&board[line-1][row-1]==now) {
+				board[line-1][row-1] = 0;
+				result = searchBoard(board,word,index+1,row-1,line-1,rowMax,lineMax);
+				if (result) {
+					return result;
+				}
+			}
+			if (row -1 >=0
+					&& line <lineMax
+					&&board[line+1][row-1]==now) {
+					board[line+1][row-1] = 0;
+					result = searchBoard(board,word,index+1,row-1,line+1,rowMax,lineMax);
+					if (result) {
+						return result;
+					}
+				}
+			if (row < rowMax
+					&& line - 1>=0
+					&&board[line-1][row+1]==now) {
+					board[line-1][row+1] = 0;
+					result = searchBoard(board,word,index+1,row+1,line-1,rowMax,lineMax);
+					if (result) {
+						return result;
+					}
+				}
+			if (row <rowMax
+					&& line <lineMax
+					&&board[line+1][row+1]==now) {
+					board[line+1][row+1] = 0;
+					result = searchBoard(board,word,index+1,row+1,line+1,rowMax,lineMax);
+					if (result) {
+						return result;
+					}
+				}
+		}
+		return result;
+	}
+
 	/**Given an array S of n integers, are there elements a, b, c in S such that a + b + c = 0? Find all unique triplets in the array which gives the sum of zero.
 	* Note:
 	* Elements in a triplet (a,b,c) must be in non-descending order. (ie, a ¡Ü b ¡Ü c)
