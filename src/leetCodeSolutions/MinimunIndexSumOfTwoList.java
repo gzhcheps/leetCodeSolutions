@@ -1,6 +1,10 @@
 package leetCodeSolutions;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.junit.Test;
@@ -9,7 +13,7 @@ public class MinimunIndexSumOfTwoList {
 	@Test
 	public void main() {
 		String[] l1 = {"Shogun","Tapioca Express","Burger King","KFC"};
-		String[] l2 = {"KFC","Burger King","Tapioca Express","Shogun"};
+		String[] l2 = {"KFC","Shogun","Burger King"};
 		System.out.println(findRestaurant(l1,l2));
 	}
 
@@ -33,15 +37,27 @@ public class MinimunIndexSumOfTwoList {
 				}
 			}
 		}
-        String[] re = new String[resultMap.values().size()];
-        return resultMap.values().toArray(re);
+        
+        int minCount = -1;
+        List<String> resultList = new ArrayList<>();
+        Set<TreeComparator> keySet = resultMap.keySet();
+        for (TreeComparator key : keySet) {
+			if (-1 == minCount) {
+				minCount = key.listIndex;
+			}else if (minCount < key.listIndex) {
+				break;
+			}
+			resultList.add(resultMap.get(key));
+		}
+        String[] re = new String[resultList.size()];
+        return resultList.toArray(re);
     }
     
     private class TreeComparator implements Comparable<TreeComparator>{
     	Integer listIndex;
     	Integer minIndex;
     	
-    	 TreeComparator(int index,int list){
+    	 TreeComparator(int list,int index){
     		 this.listIndex = list;
     		 this.minIndex = index;
     	 }

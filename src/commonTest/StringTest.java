@@ -29,6 +29,15 @@ public class StringTest {
 		Long a= 100185l;
 		Integer b = 100185;
 		System.out.println(a.intValue() == b);
+		
+		
+		
+		Integer testInt = new Integer(3);
+		
+		Integer testInt2 = new Integer(3);
+		
+		System.out.println(testInt == testInt2);
+		System.out.println(testInt.equals(testInt2));
 	}
 
     
